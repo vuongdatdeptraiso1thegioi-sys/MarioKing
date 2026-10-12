@@ -1,0 +1,138 @@
+--[[
+    MARIO HUB NEON X v2
+    Single-file Lua GUI demo
+]]
+
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "MarioHubNeonX"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.fromOffset(300, 360)
+frame.Position = UDim2.new(0.5, -150, 0.5, -180)
+frame.BackgroundColor3 = Color3.fromRGB(15, 20, 35)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(0, 220, 255)
+stroke.Thickness = 2
+stroke.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 48)
+title.BackgroundTransparency = 1
+title.Text = "⚡ MARIO HUB NEON X v2"
+title.TextColor3 = Color3.fromRGB(0, 230, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+local status = Instance.new("TextLabel")
+status.Position = UDim2.fromOffset(10, 48)
+status.Size = UDim2.new(1, -20, 0, 25)
+status.BackgroundTransparency = 1
+status.Text = "Ready • Mobile + PC"
+status.TextColor3 = Color3.fromRGB(180, 220, 255)
+status.TextSize = 13
+status.Font = Enum.Font.Gotham
+status.Parent = frame
+
+local function makeButton(text, y, callback)
+    local button = Instance.new("TextButton")
+    button.Position = UDim2.fromOffset(15, y)
+    button.Size = UDim2.new(1, -30, 0, 36)
+    button.BackgroundColor3 = Color3.fromRGB(25, 40, 60)
+    button.TextColor3 = Color3.fromRGB(230, 250, 255)
+    button.Text = text
+    button.TextSize = 15
+    button.Font = Enum.Font.GothamSemibold
+    button.AutoButtonColor = true
+    button.Parent = frame
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = button
+
+    button.Activated:Connect(function()
+        callback(button)
+    end)
+
+    return button
+end
+
+local function toggleButton(name, y, callback)
+    local enabled = false
+    local button = makeButton(name .. ": OFF", y, function(b)
+        enabled = not enabled
+        b.Text = name .. (enabled and ": ON" or ": OFF")
+        b.BackgroundColor3 = enabled
+            and Color3.fromRGB(0, 105, 125)
+            or Color3.fromRGB(25, 40, 60)
+
+        callback(enabled)
+    end)
+
+    return button
+end
+
+-- Speed: áp dụng cho nhân vật trong trải nghiệm thử nghiệm của bạn
+toggleButton("Speed Boost", 82, function(enabled)
+    local character = player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = enabled and 32 or 16
+    end
+end)
+
+toggleButton("Jump Boost", 124, function(enabled)
+    local character = player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.UseJumpPower = true
+        humanoid.JumpPower = enabled and 80 or 50
+    end
+end)
+
+toggleButton("Infinite Jump", 166, function(enabled)
+    -- Demo UI: nút ghi nhận trạng thái.
+    -- Cơ chế nhảy bổ sung nên được triển khai trong game bạn sở hữu.
+    status.Text = enabled
+        and "Infinite Jump: enabled in demo"
+        or "Infinite Jump: disabled"
+end)
+
+toggleButton("Player HUD", 208, function(enabled)
+    status.Visible = true
+    status.Text = enabled and "Player HUD: ON" or "Player HUD: OFF"
+end)
+
+toggleButton("FPS Counter", 250, function(enabled)
+    if enabled then
+        status.Text = "FPS: measuring..."
+    else
+        status.Text = "Ready • Mobile + PC"
+    end
+end)
+
+makeButton("✕ CLOSE HUB", 302, function()
+    gui:Destroy()
+end)
+
+print("Mario Hub Neon X v2 loaded!")
